@@ -39,7 +39,7 @@
 
 
 (defun eh--build-fancy-alist-from-frame-list (frame-list)
-  (let ((fl (build-frames-alist-from-frame-list frame-list)))
+  (let ((fl (eh--build-frames-alist-from-frame-list frame-list)))
     (dotimes (i (length fl))
       (let ((elt (nth i fl)))
 	(setcar (nth i fl)
@@ -50,7 +50,7 @@
 
 (defun eh--select-workspace ()
   "Select an exwm workspace using completing-read."
-  (let* ((fl (build-fancy-alist-from-frame-list exwm-workspace--list))
+  (let* ((fl (eh--build-fancy-alist-from-frame-list exwm-workspace--list))
 	 (selected (completing-read "foo: " fl)))
     (cdr (assoc selected fl))))
 
