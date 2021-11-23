@@ -73,7 +73,7 @@
       (select-frame frm)
       (select-window new-window))))
 
-(defun eh-current-window-to-workspace-completing-read ()
+(defun eh-current-window-to-workspace-and-follow-completing-read ()
   "Delete current window and move it to a selected workspace.
 Select workspace by completing-read."
   (interactive)
@@ -81,7 +81,7 @@ Select workspace by completing-read."
     (eh--current-window-to-workspace-by-frame sel-frame)))
 
 
-(defun eh-current-window-to-workspace-by-index (idx)
+(defun eh-current-window-to-workspace-and-follow-by-index (idx)
   "Delete current window and move it to workspace `IDX' (e.g.,
 numerical index)."
   (interactive)
