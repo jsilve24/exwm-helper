@@ -29,7 +29,7 @@
 
 (defun eh--build-frames-alist-from-frame-list (frame-list)
   "Return an alist of name-frame pairs from a FRAME-LIST (i.e. returned value of the `frame-list' function)."
-  (mapcar (lambda (f) `(,(nameframe--get-frame-name f) . ,f)) frame-list))
+  (mapcar (lambda (f) `(,(eh--get-frame-name f) . ,f)) frame-list))
 
 (defun eh--my-presorted-completion-table (completions)
   (lambda (string pred action)
