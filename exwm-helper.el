@@ -57,16 +57,19 @@
 (defun eh-current-window-to-frame ()
   "Delete current window and move it to a selected frame."
   (interactive)
-  (let* ((window (selected-window))
+  (let* ((cur-frame (selected-frame))
+	 (window (selected-window))
 	 (buf (window-buffer window))
 	 (sel-frame (eh--select-workspace)))
     (select-frame sel-frame)
-    (if (string= major-mode "splash-mode")
-	nil
-      (progn
-	(split-window-right)
-	(call-interactively #'other-window)))
-    (switch-to-buffer buf)
+    (split-window-right)
+    (call-interactively #'other-window)
+    (if (string= major-mode "exwm-mode")
+	(progn
+	  (select-frame cur-frame)
+	  (exwm-workspace-move-window sel-frame)
+	  (select-frame sel-frame))
+	(switch-to-buffer buf))
     (delete-window window)))
 
 (provide 'exwm-helper)
