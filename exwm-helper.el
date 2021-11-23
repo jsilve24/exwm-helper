@@ -17,8 +17,11 @@
 ;;
 ;;  Some utility functions for exwm.
 ;;
-;;   + eh-current-window-to-frame :: move current window to a new
-;;     frame selected using completing-read
+;;   + eh-current-window-to-workspace-and-follow-completing-read :: move current window to a new
+;;     frame selected using completing-read (and delete original window)
+;;
+;;   + eh-current-window-to-workspace-and-follow-by-index :: move current window to a new
+;;     frame selected by passing numerical index argument (and delete original window)
 ;;
 ;;; Code:
 
