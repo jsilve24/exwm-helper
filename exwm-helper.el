@@ -54,22 +54,38 @@
 	 (selected (completing-read "foo: " fl)))
     (cdr (assoc selected fl))))
 
-(defun eh-current-window-to-frame ()
-  "Delete current window and move it to a selected frame."
-  (interactive)
+
+(defun eh--current-window-to-workspace-by-frame (frm)
+  "Delete current window and move it to the frame `FRM'."
   (let* ((cur-frame (selected-frame))
 	 (window (selected-window))
-	 (buf (window-buffer window))
-	 (sel-frame (eh--select-workspace)))
-    (select-frame sel-frame)
+	 (buf (window-buffer window))) 
+    (select-frame frm)
     (split-window-right)
     (call-interactively #'other-window)
-    (if (string= major-mode "exwm-mode")
-	(progn
-	  (select-frame cur-frame)
-	  (exwm-workspace-move-window sel-frame)
-	  (select-frame sel-frame))
+    (let ((new-window (selected-window)))
+      (if (string= major-mode "exwm-mode")
+	  (progn
+	    (select-frame cur-frame)
+	    (exwm-workspace-move-window frm))
 	(switch-to-buffer buf))
-    (delete-window window)))
+      (delete-window window)
+      (select-frame frm)
+      (select-window new-window))))
+
+(defun eh-current-window-to-workspace-completing-read ()
+  "Delete current window and move it to a selected workspace.
+Select workspace by completing-read."
+  (interactive)
+  (let ((sel-frame (eh--select-workspace)))
+    (eh--current-window-to-workspace-by-frame sel-frame)))
+
+
+(defun eh-current-window-to-workspace-by-index (idx)
+  "Delete current window and move it to workspace `IDX' (e.g.,
+numerical index)."
+  (interactive)
+  (let ((sel-frame (exwm-workspace--workspace-from-frame-or-index idx)))
+    (eh--current-window-to-workspace-by-frame sel-frame)))
 
 (provide 'exwm-helper)
