@@ -54,34 +54,53 @@
 (defun eh--select-workspace ()
   "Select an exwm workspace using completing-read."
   (let* ((fl (eh--build-fancy-alist-from-frame-list exwm-workspace--list))
-	 (selected (completing-read "foo: " fl)))
+	 (selected (completing-read "Select Workspace: " fl)))
     (cdr (assoc selected fl))))
 
+(defvar eh-split-window-function 'split-window-right
+  "Function to be called when moving window onto new frame.")
 
-(defun eh--current-window-to-workspace-by-frame (frm)
+(defun eh--switch-to-other-buffer ()
+  (switch-to-buffer (other-buffer)))
+
+(defvar eh-last-window-function 'eh--switch-to-other-buffer
+  "Function to be called if removing last window from frame.")
+
+(defvar eh-fallback-buffer "*splash*"
+  "Look for this buffer and if present try to place things there.")
+
+(defun eh--eligible-fallback-buffer-in-frame-p ()
+  "Is there a visible fallback buffer in frame"
+  (if 
+      (-filter (lambda (x) (string= eh-fallback-buffer x))
+	       (-map 'buffer-name (-map 'window-buffer (window-list))))
+      (get-buffer-window eh-fallback-buffer)
+    nil))
+
+(defun eh--current-window-to-workspace-by-frame-and-follow (frm)
   "Delete current window and move it to the frame `FRM'."
   (let* ((cur-frame (selected-frame))
 	 (window (selected-window))
-	 (buf (window-buffer window))) 
+	 (buf (window-buffer window)))
+    ;; if (not (eq cur-frame frm))
+    (if (one-window-p t)
+	(funcall eh-last-window-function)
+      (delete-window window))
     (select-frame frm)
-    (split-window-right)
-    (call-interactively #'other-window)
-    (let ((new-window (selected-window)))
-      (if (string= major-mode "exwm-mode")
-	  (progn
-	    (select-frame cur-frame)
-	    (exwm-workspace-move-window frm))
-	(switch-to-buffer buf))
-      (delete-window window)
-      (select-frame frm)
-      (select-window new-window))))
+    (let ((fallback (eh--eligible-fallback-buffer-in-frame-p)))
+      (if fallback
+	  (select-window fallback)
+	(progn  (funcall eh-split-window-function)
+		(other-window 1))))
+    (switch-to-buffer buf)))
 
 (defun eh-current-window-to-workspace-and-follow-completing-read ()
   "Delete current window and move it to a selected workspace.
 Select workspace by completing-read."
   (interactive)
   (let ((sel-frame (eh--select-workspace)))
-    (eh--current-window-to-workspace-by-frame sel-frame)))
+    (if (not  (eq (selected-frame) sel-frame))
+     (eh--current-window-to-workspace-by-frame sel-frame))))
 
 
 (defun eh-current-window-to-workspace-and-follow-by-index (idx)
@@ -89,6 +108,7 @@ Select workspace by completing-read."
 numerical index)."
   (interactive)
   (let ((sel-frame (exwm-workspace--workspace-from-frame-or-index idx)))
-    (eh--current-window-to-workspace-by-frame sel-frame)))
+    (if (not  (eq (selected-frame) sel-frame))
+	(eh--current-window-to-workspace-by-frame sel-frame))))
 
 (provide 'exwm-helper)
