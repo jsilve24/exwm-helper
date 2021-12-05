@@ -100,7 +100,7 @@ Select workspace by completing-read."
   (interactive)
   (let ((sel-frame (eh--select-workspace)))
     (if (not  (eq (selected-frame) sel-frame))
-     (eh--current-window-to-workspace-by-frame sel-frame))))
+     (eh--current-window-to-workspace-by-frame-and-follow sel-frame))))
 
 
 (defun eh-current-window-to-workspace-and-follow-by-index (idx)
@@ -109,6 +109,6 @@ numerical index)."
   (interactive)
   (let ((sel-frame (exwm-workspace--workspace-from-frame-or-index idx)))
     (if (not  (eq (selected-frame) sel-frame))
-	(eh--current-window-to-workspace-by-frame sel-frame))))
+	(eh--current-window-to-workspace-by-frame-and-follow sel-frame))))
 
 (provide 'exwm-helper)
