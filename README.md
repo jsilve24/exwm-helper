@@ -6,9 +6,9 @@ At the moment just some functions for moving windows between workspaces.
 
 # Functions
 
-* eh-current-window-to-workspace-and-follow-completing-read :: move current window to a new
+* `eh-current-window-to-workspace-and-follow-completing-read`  move current window to a new
   frame selected using completing-read (and delete original window)
-* eh-current-window-to-workspace-and-follow-by-index :: move current window to a new
+* `eh-current-window-to-workspace-and-follow-by-index` move current window to a new
   frame selected by passing numerical index argument (and delete original window)
 
 
